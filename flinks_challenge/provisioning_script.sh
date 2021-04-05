@@ -19,6 +19,8 @@ else
  } &> /dev/null
 
  echo "Enabled dns registry and helm3"
+ 
+ microk8s config > ~/.kube/config
 
  #Build and push the docker image to microk8s docker regsitry
  echo "Building an nginx docker image and pushing the image to micork8s docker registry..."
@@ -36,7 +38,7 @@ else
  helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
  helm repo update
  echo "Deploying nginx ingress controller"
- helm install app-ingress ingress-nginx/ingress-nginx --namespace ingress-controller --set controller.replicaCount=2 > /tmp/helm_out
+ helm install app-ingress ingress-nginx/ingress-nginx --namespace ingress-controller --set controller.replicaCount=2 --set controller.admissionWebhooks.enabled=false > /tmp/helm_out
  head -n 6 /tmp/helm_out
  
  #Deploy Nginx applications on cluster
@@ -45,7 +47,7 @@ else
  
  echo "Deploying second nginxapp on the cluster"
  microk8s kubectl create -f ./nginx_app/nginxapp2.yaml
-
+  
  microk8s kubectl create -f ./nginx_app/ingress.yaml
 
  echo "done with application deployments on microk8s cluster"
