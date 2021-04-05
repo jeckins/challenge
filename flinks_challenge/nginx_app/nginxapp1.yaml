@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginxapp
+  namespace: flinks
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: mychart
+        image: "nginx:stable"
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - name: nginxconf
+            mountPath: /usr/share/nginx/html
+      volumes:
+        - name: nginxconf
+          configMap:
+            name: nginx-index-html-configmap
+            items:
+            - key: index.html
+              path: index.html
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginxsvc
+  namespace: flinks
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: nginx
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-index-html-configmap
+  namespace: flinks
+data:
+   index.html: |
+     <html>Hello Flinks</html>
+
