@@ -3,9 +3,9 @@
 #Script to provision two Nginx services on microk8s cluster
 
 microk8s kubectl version &> /dev/null
-if [ `echo $?` == 1 ];
+if [ $? -ne 0 ];
 then
-echo "Please install microk8s in your environment"
+ echo "Please install microk8s in your environment"
 else
 
 #Enabling the microk8s addons
@@ -32,7 +32,7 @@ microk8s kubectl create namespace flinks
 microk8s kubectl create namespace ingress-controller
 
 #Deploy Nginx ingress controller using helm
-echo "Add the Helm chart for Nginx Ingress"
+echo "Add the Helm repo for Nginx Ingress"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 echo "Deploying nginx ingress controller"
